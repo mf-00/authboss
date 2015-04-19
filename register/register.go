@@ -45,7 +45,7 @@ func (r *Register) Initialize(ab *authboss.Authboss) (err error) {
 		return errors.New("register: RegisterStorer required for register functionality")
 	}
 
-	if r.templates, err = response.LoadTemplates(r.Authboss, r.Layout, r.ViewsPath, tplRegister); err != nil {
+	if r.templates, err = response.LoadTemplates(r.Authboss, r.Layout, r.LayoutMobile, r.ViewsPath, tplRegister); err != nil {
 		return err
 	}
 

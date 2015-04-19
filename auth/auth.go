@@ -44,7 +44,7 @@ func (a *Auth) Initialize(ab *authboss.Authboss) (err error) {
 		return errors.New("auth: XSRFMaker must be defined")
 	}
 
-	a.templates, err = response.LoadTemplates(a.Authboss, a.Layout, a.ViewsPath, tplLogin)
+	a.templates, err = response.LoadTemplates(a.Authboss, a.Layout, a.LayoutMobile, a.ViewsPath, tplLogin)
 	if err != nil {
 		return err
 	}

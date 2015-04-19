@@ -61,11 +61,11 @@ func (c *Confirm) Initialize(ab *authboss.Authboss) (err error) {
 		return errors.New("confirm: Need a ConfirmStorer")
 	}
 
-	c.emailHTMLTemplates, err = response.LoadTemplates(ab, c.LayoutHTMLEmail, c.ViewsPath, tplConfirmHTML)
+	c.emailHTMLTemplates, err = response.LoadTemplates(ab, c.LayoutHTMLEmail, nil, c.ViewsPath, tplConfirmHTML)
 	if err != nil {
 		return err
 	}
-	c.emailTextTemplates, err = response.LoadTemplates(ab, c.LayoutTextEmail, c.ViewsPath, tplConfirmText)
+	c.emailTextTemplates, err = response.LoadTemplates(ab, c.LayoutTextEmail, nil, c.ViewsPath, tplConfirmText)
 	if err != nil {
 		return err
 	}

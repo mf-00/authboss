@@ -6,6 +6,7 @@ package response
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -30,7 +31,10 @@ type Templates map[string]*template.Template
 // in a unique clone of layout.  All templates are expecting {{authboss}} handlebars
 // for parsing. It will check the override directory specified in the config, replacing any
 // templates as necessary.
-func LoadTemplates(ab *authboss.Authboss, layout *template.Template, fpath string, files ...string) (Templates, error) {
+//
+// If the mobile template parameter is specified, it will automatically search for views
+// prefixed with mobile_ and bind them to this layout.
+func LoadTemplates(ab *authboss.Authboss, layout, mobile *template.Template, fpath string, files ...string) (Templates, error) {
 	m := make(Templates)
 
 	funcMap := template.FuncMap{
@@ -44,37 +48,61 @@ func LoadTemplates(ab *authboss.Authboss, layout *template.Template, fpath strin
 	}
 
 	for _, file := range files {
-		b, err := ioutil.ReadFile(filepath.Join(fpath, file))
-		if exists := !os.IsNotExist(err); err != nil && exists {
-			return nil, err
-		} else if !exists {
-			b, err = Asset(file)
-			if err != nil {
-				return nil, err
-			}
+		if err := loadTpl(m, layout, funcMap, fpath, file); err != nil {
+			return nil, fmt.Errorf("Failed to load template %s: %v", file, err)
 		}
 
-		clone, err := layout.Clone()
-		if err != nil {
-			return nil, err
+		if mobile == nil {
+			continue
 		}
-
-		_, err = clone.New("authboss").Funcs(funcMap).Parse(string(b))
-		if err != nil {
-			return nil, err
+		mobileFile := "mobile_" + file
+		if err := loadTpl(m, mobile, funcMap, fpath, mobileFile); err != nil {
+			return nil, fmt.Errorf("Failed to load template %s: %v", mobileFile, err)
 		}
-
-		m[file] = clone
 	}
 
 	return m, nil
 }
 
+func loadTpl(m Templates, layout *template.Template, funcs template.FuncMap, fpath, file string) error {
+	b, err := ioutil.ReadFile(filepath.Join(fpath, file))
+	if exists := !os.IsNotExist(err); err != nil && exists {
+		return err
+	} else if !exists {
+		b, err = Asset(file)
+		if err != nil {
+			return err
+		}
+	}
+
+	clone, err := layout.Clone()
+	if err != nil {
+		return err
+	}
+
+	_, err = clone.New("authboss").Funcs(funcs).Parse(string(b))
+	if err != nil {
+		return err
+	}
+
+	m[file] = clone
+	return nil
+}
+
 // Render renders a view with xsrf and flash attributes.
 func (t Templates) Render(ctx *authboss.Context, w http.ResponseWriter, r *http.Request, name string, data authboss.HTMLData) error {
-	tpl, ok := t[name]
+	var tpl *template.Template
+	var ok bool
+	isMobile := ctx.MobileDetector(r)
+	if isMobile {
+		tpl, ok = t["mobile_"+name]
+	}
 	if !ok {
-		return authboss.RenderErr{tpl.Name(), data, ErrTemplateNotFound}
+		tpl, ok = t[name]
+	}
+
+	if !ok {
+		return authboss.RenderErr{name, data, ErrTemplateNotFound}
 	}
 
 	data.MergeKV(

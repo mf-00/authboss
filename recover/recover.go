@@ -82,16 +82,16 @@ func (r *Recover) Initialize(ab *authboss.Authboss) (err error) {
 		return errors.New("auth: XSRFMaker must be defined")
 	}
 
-	r.templates, err = response.LoadTemplates(r.Authboss, r.Layout, r.ViewsPath, tplRecover, tplRecoverComplete)
+	r.templates, err = response.LoadTemplates(r.Authboss, r.Layout, r.LayoutMobile, r.ViewsPath, tplRecover, tplRecoverComplete)
 	if err != nil {
 		return err
 	}
 
-	r.emailHTMLTemplates, err = response.LoadTemplates(r.Authboss, r.LayoutHTMLEmail, r.ViewsPath, tplInitHTMLEmail)
+	r.emailHTMLTemplates, err = response.LoadTemplates(r.Authboss, r.LayoutHTMLEmail, nil, r.ViewsPath, tplInitHTMLEmail)
 	if err != nil {
 		return err
 	}
-	r.emailTextTemplates, err = response.LoadTemplates(r.Authboss, r.LayoutTextEmail, r.ViewsPath, tplInitTextEmail)
+	r.emailTextTemplates, err = response.LoadTemplates(r.Authboss, r.LayoutTextEmail, nil, r.ViewsPath, tplInitTextEmail)
 	if err != nil {
 		return err
 	}

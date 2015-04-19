@@ -27,6 +27,10 @@ type Config struct {
 
 	// Layout that all authboss views will be inserted into.
 	Layout *template.Template
+	// LayoutMobile will be used for all mobile views instead of Layout. If this is set to
+	// something other than nil (which is the default, a basic template is used by default)
+	// then mobile views will automatically be loaded. To disable this loading, set to nil.
+	LayoutMobile *template.Template
 	// LayoutHTMLEmail is for emails going out in HTML form, authbosses e-mail templates
 	// will be inserted into this layout.
 	LayoutHTMLEmail *template.Template
@@ -37,6 +41,11 @@ type Config struct {
 	// template data. It will be merged with the data being provided for the current
 	// view in order to render the templates.
 	LayoutDataMaker ViewDataMaker
+	// MobileDetector is a function that decides whether or not to render the mobile
+	// layout & views. You can disable any attempt to render mobile views by setting this
+	// to a function like:
+	//     func mobileDetection(r *http.Request) bool { return false }
+	MobileDetector MobileDetector
 
 	// OAuth2Providers lists all providers that can be used. See
 	// OAuthProvider documentation for more details.
@@ -125,8 +134,10 @@ func (c *Config) Defaults() {
 	c.PrimaryID = StoreEmail
 
 	c.Layout = template.Must(template.New("").Parse(`<!DOCTYPE html><html><body>{{template "authboss" .}}</body></html>`))
+	c.LayoutMobile = template.Must(template.New("").Parse(`<!DOCTYPE html><html><body>{{template "authboss" .}}</body></html>`))
 	c.LayoutHTMLEmail = template.Must(template.New("").Parse(`<!DOCTYPE html><html><body>{{template "authboss" .}}</body></html>`))
 	c.LayoutTextEmail = template.Must(template.New("").Parse(`{{template "authboss" .}}`))
+	c.MobileDetector = basicMobileDetector
 
 	c.AuthLoginOKPath = "/"
 	c.AuthLoginFailPath = "/"

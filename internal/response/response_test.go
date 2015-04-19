@@ -14,17 +14,32 @@ import (
 )
 
 var testViewTemplate = template.Must(template.New("").Parse(`{{.external}} {{.fun}} {{.flash_success}} {{.flash_error}} {{.xsrfName}} {{.xsrfToken}}`))
+var testMobileViewTemplate = template.Must(template.New("").Parse(`{{.ismobile}}`))
 var testEmailHTMLTemplate = template.Must(template.New("").Parse(`<h2>{{.}}</h2>`))
 var testEmailPlainTemplate = template.Must(template.New("").Parse(`i am a {{.}}`))
 
 func TestLoadTemplates(t *testing.T) {
 	t.Parallel()
 
-	file, err := ioutil.TempFile(os.TempDir(), "authboss")
+	dir := os.TempDir()
+	file, err := ioutil.TempFile(dir, "authboss")
 	if err != nil {
 		t.Error("Unexpected error:", err)
 	}
+	tmpFileName := filepath.Base(file.Name())
+	tmpFilePath := filepath.Dir(file.Name())
+	fileMobile, err := os.Create(filepath.Join(tmpFilePath, "mobile_"+tmpFileName))
+	if err != nil {
+		t.Error("Unexpected error:", err)
+	}
+
+	defer os.Remove(file.Name())
+	defer os.Remove(fileMobile.Name())
+
 	if _, err := file.Write([]byte("{{.Val}}")); err != nil {
+		t.Error("Error writing to temp file", err)
+	}
+	if _, err := fileMobile.Write([]byte("{{.Val}}")); err != nil {
 		t.Error("Error writing to temp file", err)
 	}
 
@@ -33,15 +48,20 @@ func TestLoadTemplates(t *testing.T) {
 		t.Error("Unexpected error:", err)
 	}
 
-	filename := filepath.Base(file.Name())
-
-	tpls, err := LoadTemplates(authboss.New(), layout, filepath.Dir(file.Name()), filename)
+	mobile, err := template.New("").Parse(`<strong>{{template "authboss" .}}</strong>`)
 	if err != nil {
 		t.Error("Unexpected error:", err)
 	}
 
-	if len(tpls) != 1 {
-		t.Error("Expected 1 template:", len(tpls))
+	filename := filepath.Base(file.Name())
+
+	tpls, err := LoadTemplates(authboss.New(), layout, mobile, filepath.Dir(file.Name()), filename)
+	if err != nil {
+		t.Error("Unexpected error:", err)
+	}
+
+	if len(tpls) != 2 {
+		t.Error("Expected 2 templates:", len(tpls))
 	}
 
 	if _, ok := tpls[filename]; !ok {
@@ -81,6 +101,41 @@ func TestTemplates_Render(t *testing.T) {
 	}
 
 	if w.Body.String() != "there is no spoon do you think that's air you're breathing now?" {
+		t.Error("Body was wrong:", w.Body.String())
+	}
+}
+
+func TestTemplates_RenderMobile(t *testing.T) {
+	t.Parallel()
+
+	cookies := mocks.NewMockClientStorer()
+	ab := authboss.New()
+	ab.LayoutDataMaker = func(_ http.ResponseWriter, _ *http.Request) authboss.HTMLData {
+		return nil
+	}
+	ab.XSRFName = "mobile"
+	ab.XSRFMaker = func(_ http.ResponseWriter, _ *http.Request) string { return "mobile" }
+
+	ab.MobileDetector = func(r *http.Request) bool {
+		return true
+	}
+
+	r, _ := http.NewRequest("GET", "http://localhost", nil)
+	r.Header.Set("User-Agent", `Mozilla/5.0 (Linux; Android 4.4.2; Nexus 5 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.166 Mobile Safari/537.36`)
+	w := httptest.NewRecorder()
+	ctx, _ := ab.ContextFromRequest(r)
+	ctx.SessionStorer = cookies
+
+	tpls := Templates{
+		"mobile_hello": testMobileViewTemplate,
+	}
+
+	err := tpls.Render(ctx, w, r, "hello", authboss.HTMLData{"ismobile": "true"})
+	if err != nil {
+		t.Error(err)
+	}
+
+	if w.Body.String() != "true" {
 		t.Error("Body was wrong:", w.Body.String())
 	}
 }
