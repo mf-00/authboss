@@ -43,8 +43,7 @@ type Config struct {
 	LayoutDataMaker ViewDataMaker
 	// MobileDetector is a function that decides whether or not to render the mobile
 	// layout & views. You can disable any attempt to render mobile views by setting this
-	// to a function like:
-	//     func mobileDetection(r *http.Request) bool { return false }
+	// to nil.
 	MobileDetector MobileDetector
 
 	// OAuth2Providers lists all providers that can be used. See

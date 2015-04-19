@@ -93,7 +93,7 @@ func loadTpl(m Templates, layout *template.Template, funcs template.FuncMap, fpa
 func (t Templates) Render(ctx *authboss.Context, w http.ResponseWriter, r *http.Request, name string, data authboss.HTMLData) error {
 	var tpl *template.Template
 	var ok bool
-	isMobile := ctx.MobileDetector(r)
+	isMobile := ctx.MobileDetector != nil && ctx.MobileDetector(r)
 	if isMobile {
 		tpl, ok = t["mobile_"+name]
 	}

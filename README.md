@@ -439,10 +439,11 @@ func layoutData(w http.ResponseWriter, r *http.Request) authboss.HTMLData {
 }
 ```
 
-**Layouts:** There are 3 layouts to provide, these are specified in the configuration and you must load them yourself (using template.New().Parse() etc).
+**Layouts:** There are 4 layouts to provide, these are specified in the configuration and you must load them yourself (using template.New().Parse() etc).
 Each of these layouts should have a template defined within them like so: {{template "authboss" .}} if you are going to use this layout for other pages
 that are not authboss-related, you can use an empty define at the end to prevent errors when the authboss template has not been provided: {{define "authboss"}}{{end}}
-- Layout (for html/views)
+- Layout (for html views)
+- LayoutMobile (for mobile html views)
 - LayoutEmailHTML (for HTML e-mails)
 - LayoutEmailText (for Text e-mails)
 
@@ -451,16 +452,20 @@ and placing files with the correct names in that directory.
 
 Overiddable views are:
 
-View                      | Name
---------------------------|--------------------------
-Login Page                | login.html.tpl
-Register Page             | register.html.tpl
-Recover Page              | recover.html.tpl
-Recover New Password      | recover_complete.html.tpl
-Confirmation Email (html) | confirm_email.html.tpl
-Confirmation Email (txt)  | confirm_email.txt.tpl
-Recover Email (html)      | recover_email.html.tpl
-Recover Email (txt)       | recover_email.txt.tpl
+View                        | Name
+----------------------------|--------------------------
+Login Page                  | login.html.tpl
+Register Page               | register.html.tpl
+Recover Page                | recover.html.tpl
+Recover New Password        | recover_complete.html.tpl
+Mobile Login Page           | mobile_login.html.tpl
+Mobile Register Page        | mobile_register.html.tpl
+Mobile Recover Page         | mobile_recover.html.tpl
+Mobile Recover New Password | mobile_recover_complete.html.tpl
+Confirmation Email (html)   | confirm_email.html.tpl
+Confirmation Email (txt)    | confirm_email.txt.tpl
+Recover Email (html)        | recover_email.html.tpl
+Recover Email (txt)         | recover_email.txt.tpl
 
 [Example Layout Configuration](https://github.com/go-authboss/authboss-sample/blob/master/blog.go#L47)
 
@@ -470,3 +475,9 @@ Recover Email (txt)       | recover_email.txt.tpl
 - [Recover](https://github.com/go-authboss/authboss-sample/blob/master/ab_views/recover.html.tpl)
 - [Recover New Password](https://github.com/go-authboss/authboss-sample/blob/master/ab_views/recover_complete.html.tpl)
 - [Register](https://github.com/go-authboss/authboss-sample/blob/master/ab_views/register.html.tpl)
+
+**Disable Mobile Views:** Authboss's automatic mobile view loading can be disabled by setting LayoutMobile to nil. The rendering of mobile views is separate and can be disabled
+by setting the MobileDetector function in the config to nil.
+
+**Better Mobile Detection:** Authboss's automatic mobile detection is rudimentary at best. Simply replace the MobileDetector function in the config with your own variant to
+improve the detection. A better implementation could involve an extensive library like: https://github.com/Shaked/gomobiledetect
