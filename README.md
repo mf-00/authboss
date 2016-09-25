@@ -18,13 +18,13 @@ use them in your app.
 
 Name           | Import Path                                                                                         | Description
 ---------------|-----------------------------------------------------------------------------------------------------|------------
-Auth           | [gopkg.in/authboss.v0/register](https://github.com/go-authboss/authboss/tree/master/auth)           | Provides database password authentication for users.
-Confirm        | [gopkg.in/authboss.v0/confirm](https://github.com/go-authboss/authboss/tree/master/confirm)         | Sends an e-mail verification before allowing users to log in.
-Lock           | [gopkg.in/authboss.v0/lock](https://github.com/go-authboss/authboss/tree/master/lock)               | Locks user accounts after N authentication failures in M time.
-OAuth2         | [gopkg.in/authboss.v0/oauth2](https://github.com/go-authboss/authboss/tree/master/oauth2)           | Provides oauth2 authentication for users.
-Recover        | [gopkg.in/authboss.v0/recover](https://github.com/go-authboss/authboss/tree/master/recover)         | Allows for password resets via e-mail.
-Register       | [gopkg.in/authboss.v0/register](https://github.com/go-authboss/authboss/tree/master/register)       | User-initiated account creation.
-Remember       | [gopkg.in/authboss.v0/remember](https://github.com/go-authboss/authboss/tree/master/remember)       | Persisting login sessions past session cookie expiry.
+Auth           | [github.com/mf-00/authboss/register](https://github.com/go-authboss/authboss/tree/master/auth)           | Provides database password authentication for users.
+Confirm        | [github.com/mf-00/authboss/confirm](https://github.com/go-authboss/authboss/tree/master/confirm)         | Sends an e-mail verification before allowing users to log in.
+Lock           | [github.com/mf-00/authboss/lock](https://github.com/go-authboss/authboss/tree/master/lock)               | Locks user accounts after N authentication failures in M time.
+OAuth2         | [github.com/mf-00/authboss/oauth2](https://github.com/go-authboss/authboss/tree/master/oauth2)           | Provides oauth2 authentication for users.
+Recover        | [github.com/mf-00/authboss/recover](https://github.com/go-authboss/authboss/tree/master/recover)         | Allows for password resets via e-mail.
+Register       | [github.com/mf-00/authboss/register](https://github.com/go-authboss/authboss/tree/master/register)       | User-initiated account creation.
+Remember       | [github.com/mf-00/authboss/remember](https://github.com/go-authboss/authboss/tree/master/remember)       | Persisting login sessions past session cookie expiry.
 
 Getting Started
 ===============
@@ -145,7 +145,7 @@ if err != nil {
 
 ## <a name="auth"></a>User Authentication via Password
 **Requirements:**
-- Auth module ([gopkg.in/authboss.v0/auth](https://github.com/go-authboss/authboss/tree/master/auth))
+- Auth module ([github.com/mf-00/authboss/auth](https://github.com/go-authboss/authboss/tree/master/auth))
 - [Storer](#storers)
 - [Session Storer](#client_storers)
 - [Views](#views)
@@ -162,7 +162,7 @@ Another link is created for a logout. Simply link/redirect the user to this page
 
 ## <a name="oauth2"></a> User Authentication via OAuth2
 **Requirements:**
-- OAuth2 module ([gopkg.in/authboss.v0/oauth2](https://github.com/go-authboss/authboss/tree/master/oauth2))
+- OAuth2 module ([github.com/mf-00/authboss/oauth2](https://github.com/go-authboss/authboss/tree/master/oauth2))
 - [OAuth2Storer](#storers)
 - OAuth2Providers
 - [Session and Cookie Storers](#client_storers)
@@ -199,7 +199,7 @@ uri := `/authboss_mount_path/oauth2/google?` + params.Encode()
 
 ## <a name="register"></a> User Registration
 **Requirements:**
-- Register module ([gopkg.in/authboss.v0/register](https://github.com/go-authboss/authboss/tree/master/register))
+- Register module ([github.com/mf-00/authboss/register](https://github.com/go-authboss/authboss/tree/master/register))
 - [RegisterStorer](#storers)
 - [Session Storer](#client_storers)
 - [Views](#views)
@@ -218,8 +218,8 @@ See also: [Validation](#validation)
 
 ## <a name="confirm"></a> Confirming Registrations
 **Requirements:**
-- Register module ([gopkg.in/authboss.v0/register](https://github.com/go-authboss/authboss/tree/master/register))
-- Confirm module ([gopkg.in/authboss.v0/confirm](https://github.com/go-authboss/authboss/tree/master/confirm))
+- Register module ([github.com/mf-00/authboss/register](https://github.com/go-authboss/authboss/tree/master/register))
+- Confirm module ([github.com/mf-00/authboss/confirm](https://github.com/go-authboss/authboss/tree/master/confirm))
 - [RegisterStorer](#storers)
 - [Session and Cookie Storers](#client_storers)
 - [Views](#views)
@@ -234,7 +234,7 @@ provided in the e-mail and their account becomes confirmed, they will automatica
 
 ## <a name="recover"></a> Password Recovery
 **Requirements:**
-- Recover module ([gopkg.in/authboss.v0/recover](https://github.com/go-authboss/authboss/tree/master/recover))
+- Recover module ([github.com/mf-00/authboss/recover](https://github.com/go-authboss/authboss/tree/master/recover))
 - [RecoverStorer](#storers)
 - [Session Storer](#client_storers)
 - [Views](#views)
@@ -250,7 +250,7 @@ their new password is stored, they are logged in and redirected to the RecoverOK
 
 ## <a name="remember"></a> Remember Me (persistent login)
 **Requirements:**
-- Remember module ([gopkg.in/authboss.v0/remember](https://github.com/go-authboss/authboss/tree/master/remember))
+- Remember module ([github.com/mf-00/authboss/remember](https://github.com/go-authboss/authboss/tree/master/remember))
 - [RememberStorer](#storers)
 - [Session and Cookie Storers](#client_storers)
 
@@ -278,7 +278,7 @@ to pages with sensitive information if this value is true in the session, and fo
 
 ## <a name="lock"></a> Locking Accounts for Authentication Failures
 **Requirements:**
-- Lock module ([gopkg.in/authboss.v0/lock](https://github.com/go-authboss/authboss/tree/master/lock))
+- Lock module ([github.com/mf-00/authboss/lock](https://github.com/go-authboss/authboss/tree/master/lock))
 - [Storer](#storers)
 
 **Storage Requirements:**
